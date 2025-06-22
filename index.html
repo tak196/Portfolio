@@ -528,11 +528,36 @@
             font-size: 1.2rem;
         }
 
-        .comparison-labels {
+        /* Overlay Labels */
+        .comparison-overlay-labels {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            width: 100%;
             display: flex;
             justify-content: space-between;
-            margin-top: 1rem;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .overlay-label-before,
+        .overlay-label-after {
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
             font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border-radius: 4px;
+        }
+
+        .overlay-label-before {
+            margin-left: 12.5%;
+        }
+
+        .overlay-label-after {
+            margin-right: 12.5%;
         }
 
         .label-before {
@@ -906,12 +931,13 @@
                         <span>✨ Professional Result</span>
                     </div>
                     <div class="slider-handle" id="sliderHandle"></div>
+                    
+                    <!-- Before/After Labels -->
+                    <div class="comparison-overlay-labels">
+                        <span class="overlay-label-before">BEFORE</span>
+                        <span class="overlay-label-after">AFTER</span>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="comparison-labels">
-                <span class="label-before">BEFORE: Raw Product Photo</span>
-                <span class="label-after">AFTER: Professional Photography</span>
             </div>
         </div>
     </section>
@@ -1040,7 +1066,3 @@
     </script>
 </body>
 </html>
-<!-- Footer -->
-<footer>
-    <p>&copy; 2025 Chochlik. All rights reserved.</p>
-</footer>
