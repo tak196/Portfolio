@@ -398,6 +398,10 @@
             100% { transform: translateX(calc(-300px * 4 - 8rem)); }
         }
 
+        .portfolio-cta {
+            margin-top: 2rem;
+        }
+
         /* Process Section */
         .process {
             padding: 6rem 2rem;
@@ -484,18 +488,21 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: #f0f0f0;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.2rem;
+        }
+
+        .before-image {
+            background: #f0f0f0;
             color: #666;
         }
 
         .after-image {
             background: #000;
             color: #fff;
-            clip-path: inset(0 50% 0 0);
+            clip-path: inset(0 0 0 50%);
             transition: clip-path 0.3s ease;
         }
 
@@ -512,37 +519,40 @@
         }
 
         .slider-handle::before {
-            content: '⟷';
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            background: #000;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .slider-handle::after {
+            content: '↔';
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: #000;
             color: #fff;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
+            font-size: 12px;
+            font-weight: bold;
         }
 
-        /* Overlay Labels */
-        .comparison-overlay-labels {
-            position: absolute;
-            top: 20px;
-            left: 0;
-            width: 100%;
+        /* Static Labels - outside image */
+        .comparison-static-labels {
             display: flex;
             justify-content: space-between;
-            z-index: 5;
-            pointer-events: none;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
         }
 
-        .overlay-label-before,
-        .overlay-label-after {
-            background: rgba(0, 0, 0, 0.8);
+        .static-label-before,
+        .static-label-after {
+            background: #000;
             color: #fff;
             padding: 0.5rem 1rem;
             font-size: 0.9rem;
@@ -552,20 +562,12 @@
             border-radius: 4px;
         }
 
-        .overlay-label-before {
+        .static-label-before {
             margin-left: 12.5%;
         }
 
-        .overlay-label-after {
+        .static-label-after {
             margin-right: 12.5%;
-        }
-
-        .label-before {
-            color: #666;
-        }
-
-        .label-after {
-            color: #000;
         }
 
         /* Contact Form */
@@ -806,7 +808,7 @@
                         <li>1 free round of minor revisions</li>
                         <li>Commercial license included</li>
                     </ul>
-                    <a href="#contact" class="btn btn-primary" style="width: 100%; text-align: center;">Get Started</a>
+                    <a href="#contact" class="btn btn-primary" style="width: 100%; text-align: center;">Rezerwuj Sesję Teraz</a>
                 </div>
 
                 <div class="package-card featured">
@@ -821,7 +823,7 @@
                         <li>Brand questionnaire for perfect match</li>
                         <li>1 free round of revisions</li>
                     </ul>
-                    <a href="#contact" class="btn btn-primary" style="width: 100%; text-align: center;">Most Popular</a>
+                    <a href="#contact" class="btn btn-primary" style="width: 100%; text-align: center;">Rezerwuj Sesję Teraz</a>
                 </div>
 
                 <div class="package-card">
@@ -838,7 +840,7 @@
                         <li>Complete project presentation (PDF)</li>
                         <li>2 free rounds of revisions</li>
                     </ul>
-                    <a href="#contact" class="btn btn-primary" style="width: 100%; text-align: center;">Go Premium</a>
+                    <a href="#contact" class="btn btn-primary" style="width: 100%; text-align: center;">Rezerwuj Sesję Teraz</a>
                 </div>
             </div>
         </div>
@@ -878,6 +880,10 @@
                         <img src="https://placehold.co/300x300/f0f0f0/999?text=Product+4" alt="Product Photography 4">
                     </div>
                 </div>
+            </div>
+            
+            <div class="portfolio-cta">
+                <a href="portfolio.html" class="btn btn-secondary">Zobacz Pełne Portfolio</a>
             </div>
         </div>
     </section>
@@ -922,6 +928,12 @@
             <h2 class="section-title">See The Transformation</h2>
             <p class="section-subtitle">Watch ordinary products become extraordinary visual masterpieces</p>
             
+            <!-- Before/After Labels -->
+            <div class="comparison-static-labels">
+                <span class="static-label-before">BEFORE</span>
+                <span class="static-label-after">AFTER</span>
+            </div>
+            
             <div class="comparison-wrapper">
                 <div class="comparison-slider">
                     <div class="before-image">
@@ -931,12 +943,6 @@
                         <span>✨ Professional Result</span>
                     </div>
                     <div class="slider-handle" id="sliderHandle"></div>
-                    
-                    <!-- Before/After Labels -->
-                    <div class="comparison-overlay-labels">
-                        <span class="overlay-label-before">BEFORE</span>
-                        <span class="overlay-label-after">AFTER</span>
-                    </div>
                 </div>
             </div>
         </div>
@@ -1019,44 +1025,69 @@
 
         let isDragging = false;
 
-        sliderHandle.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            e.preventDefault();
-        });
+        if (sliderHandle && afterImage && comparisonWrapper) {
+            sliderHandle.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                e.preventDefault();
+            });
 
-        document.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-            
-            const rect = comparisonWrapper.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
-            
-            sliderHandle.style.left = percentage + '%';
-            afterImage.style.clipPath = `inset(0 ${100 - percentage}% 0 0)`;
-        });
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                
+                const rect = comparisonWrapper.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
+                
+                sliderHandle.style.left = percentage + '%';
+                afterImage.style.clipPath = `inset(0 ${100 - percentage}% 0 0)`;
+            });
 
-        document.addEventListener('mouseup', () => {
-            isDragging = false;
-        });
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+
+            // Touch events for mobile
+            sliderHandle.addEventListener('touchstart', (e) => {
+                isDragging = true;
+                e.preventDefault();
+            });
+
+            document.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                
+                const rect = comparisonWrapper.getBoundingClientRect();
+                const x = e.touches[0].clientX - rect.left;
+                const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
+                
+                sliderHandle.style.left = percentage + '%';
+                afterImage.style.clipPath = `inset(0 ${100 - percentage}% 0 0)`;
+            });
+
+            document.addEventListener('touchend', () => {
+                isDragging = false;
+            });
+        }
 
         // Auto-fill products based on package selection
         const packageSelect = document.getElementById('package');
         const productsInput = document.getElementById('products');
 
-        packageSelect.addEventListener('change', function() {
-            const selectedOption = this.options[this.selectedIndex];
-            const productCount = selectedOption.getAttribute('data-products');
-            
-            if (productCount) {
-                productsInput.value = productCount;
-                productsInput.readOnly = true;
-                productsInput.style.background = '#f0f0f0';
-            } else {
-                productsInput.value = '';
-                productsInput.readOnly = false;
-                productsInput.style.background = '#fff';
-            }
-        });
+        if (packageSelect && productsInput) {
+            packageSelect.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                const productCount = selectedOption.getAttribute('data-products');
+                
+                if (productCount) {
+                    productsInput.value = productCount;
+                    productsInput.readOnly = true;
+                    productsInput.style.background = '#f0f0f0';
+                } else {
+                    productsInput.value = '';
+                    productsInput.readOnly = false;
+                    productsInput.style.background = '#fff';
+                }
+            });
+        }
 
         // Form submission
         document.querySelector('form').addEventListener('submit', function(e) {
